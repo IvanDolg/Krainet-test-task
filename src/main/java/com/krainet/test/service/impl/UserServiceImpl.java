@@ -9,7 +9,6 @@ import com.krainet.test.security.UserPrincipal;
 import com.krainet.test.service.UserService;
 import lombok.AllArgsConstructor;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -35,6 +34,20 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    public UserDto update(UserDto userDto, Long id) {
+        User user = userRepository.findById(id).orElseThrow(
+                () -> new UsernameNotFoundException("User not found")
+        );
+
+        user.setUsername(userDto.getUsername());
+        user.setPassword(passwordEncoder.encode(userDto.getPassword()));
+        user.setEmail(userDto.getEmail());
+
+        User updatedUser = userRepository.save(user);
+        return AutoUserMapper.MAPPER.mapToUserDto(updatedUser);
+    }
+
+    @Override
     public List<UserDto> findAll() {
         List<User> users = userRepository.findAll();
         return users.stream().map(AutoUserMapper.MAPPER::mapToUserDto).toList();
@@ -42,11 +55,12 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public Optional<UserDto> findById(Long id) {
-        return Optional.empty();
+        return userRepository.findById(id).map(AutoUserMapper.MAPPER::mapToUserDto);
     }
 
     @Override
     public void deleteById(Long id) {
+        userRepository.deleteById(id);
     }
 
     @Override

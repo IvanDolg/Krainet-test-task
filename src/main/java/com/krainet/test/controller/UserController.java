@@ -9,10 +9,10 @@ import com.krainet.test.service.UserService;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Set;
 
@@ -37,18 +37,37 @@ public class UserController {
 
         if (passwordEncoder.matches(dto.getPassword(), userPrincipal.getPassword())) {
             Set<Role> authorities = (Set<Role>) userPrincipal.getAuthorities();
-            LocalDateTime time = LocalDateTime.now();
-            //mapper.mapToUser(dto).setLastVisitDate(time);
             String token = jwtTokenProvider.generateToken(userPrincipal.getUsername(), userPrincipal.getPassword(), authorities);
             return ResponseEntity.ok(token);
         }
         return ResponseEntity.badRequest().build();
     }
 
+    @GetMapping("/{id}")
+    public ResponseEntity<UserDto> findById(@PathVariable Long id) {
+        UserDto user = userService.findById(id).orElseThrow(
+                () -> new UsernameNotFoundException("User not found")
+        );
+        return new ResponseEntity<>(user, HttpStatus.OK);
+    }
 
     @GetMapping("/all")
     public ResponseEntity<List<UserDto>> findAll() {
         List<UserDto> users = userService.findAll();
         return new ResponseEntity<>(users, HttpStatus.OK);
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteById(@PathVariable Long id) {
+        userService.deleteById(id);
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<UserDto> update(@RequestBody UserDto userDto,
+                                          @PathVariable Long id) {
+
+        UserDto updatedUser = userService.update(userDto, id);
+        return new ResponseEntity<>(updatedUser, HttpStatus.OK);
     }
 }
