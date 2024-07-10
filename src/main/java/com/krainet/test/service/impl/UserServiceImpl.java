@@ -5,8 +5,12 @@ import com.krainet.test.entity.Role;
 import com.krainet.test.entity.User;
 import com.krainet.test.mapper.AutoUserMapper;
 import com.krainet.test.repository.UserRepository;
+import com.krainet.test.security.UserPrincipal;
 import com.krainet.test.service.UserService;
 import lombok.AllArgsConstructor;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -32,7 +36,8 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public List<UserDto> findAll() {
-        return List.of();
+        List<User> users = userRepository.findAll();
+        return users.stream().map(AutoUserMapper.MAPPER::mapToUserDto).toList();
     }
 
     @Override
@@ -42,6 +47,20 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public void deleteById(Long id) {
+    }
+
+    @Override
+    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+
+        User user = userRepository.findByUsername(username).orElseThrow();
+
+        UserPrincipal userPrincipal = UserPrincipal.builder()
+                .username(user.getUsername())
+                .password(user.getPassword())
+                .roles(user.getRoles())
+                .build();
+
+        return userPrincipal;
 
     }
 }

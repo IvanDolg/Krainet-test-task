@@ -5,11 +5,13 @@ import io.jsonwebtoken.*;
 import jakarta.annotation.PostConstruct;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.SneakyThrows;
+import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Component;
 
+import java.security.Security;
 import java.util.*;
 
 @Component
@@ -19,7 +21,6 @@ public class JWTTokenProvider {
 
     @Value("${jwt.token.expired}")
     private long jwtExpirationInMs;
-
 
     @PostConstruct
     protected void init() {
@@ -68,7 +69,7 @@ public class JWTTokenProvider {
     public String resolveToken(HttpServletRequest req) {
         String bearerToken = req.getHeader("Authorization");
         if (bearerToken != null && bearerToken.startsWith("Bearer ")) {
-            return bearerToken.substring(7, bearerToken.length());
+            return bearerToken.substring(7);
         }
         return null;
     }

@@ -1,11 +1,13 @@
 package com.krainet.test.service;
 
 import com.krainet.test.dto.userDto.UserDto;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
 
 import java.util.List;
 import java.util.Optional;
 
-public interface UserService {
+public interface UserService extends UserDetailsService {
     UserDto save(UserDto userDto);
     List<UserDto> findAll();
     Optional<UserDto> findById(Long id);
