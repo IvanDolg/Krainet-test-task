@@ -1,5 +1,7 @@
-package com.krainet.test.entity;
+package com.krainet.test.dto.record;
 
+import com.krainet.test.entity.Project;
+import com.krainet.test.entity.User;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -11,10 +13,7 @@ import java.time.LocalDateTime;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-@Entity
-public class Record {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+public class RecordDto {
     private Long id;
     private LocalDateTime startTime;
     private LocalDateTime endTime;
