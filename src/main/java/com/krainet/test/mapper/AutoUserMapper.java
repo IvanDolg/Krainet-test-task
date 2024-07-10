@@ -1,6 +1,6 @@
 package com.krainet.test.mapper;
 
-import com.krainet.test.dto.UserDto;
+import com.krainet.test.dto.userDto.UserDto;
 import com.krainet.test.entity.User;
 import org.mapstruct.Mapper;
 import org.mapstruct.factory.Mappers;
