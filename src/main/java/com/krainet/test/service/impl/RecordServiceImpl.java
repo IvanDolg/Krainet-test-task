@@ -49,6 +49,8 @@ public class RecordServiceImpl implements RecordService {
         );
         record.setStartTime(recordDto.getStartTime());
         record.setEndTime(recordDto.getEndTime());
+        record.setUserId(recordDto.getUserId());
+        record.setProjectId(recordDto.getProjectId());
 
         Record savedRecord = recordRepository.save(record);
         return AutoRecordMapper.MAPPER.mapToRecordDto(savedRecord);

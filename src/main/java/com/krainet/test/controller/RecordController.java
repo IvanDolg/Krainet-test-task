@@ -26,4 +26,18 @@ public class RecordController {
         return new ResponseEntity<>(apiResponseDto, HttpStatus.OK);
     }
 
+    @PutMapping("/{id}")
+    public ResponseEntity<RecordDto> update(@PathVariable Long id,
+                                            @RequestBody RecordDto recordDto) {
+        RecordDto updatedRecord = recordService.update(id, recordDto);
+        return new ResponseEntity<>(updatedRecord, HttpStatus.OK);
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteById(@PathVariable Long id) {
+        recordService.delete(id);
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
+
+
 }
