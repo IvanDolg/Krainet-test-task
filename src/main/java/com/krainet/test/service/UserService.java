@@ -1,7 +1,6 @@
 package com.krainet.test.service;
 
 import com.krainet.test.dto.userDto.UserDto;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 
 import java.util.List;

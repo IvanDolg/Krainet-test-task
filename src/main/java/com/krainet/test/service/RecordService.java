@@ -1,7 +1,6 @@
 package com.krainet.test.service;
 
 import com.krainet.test.dto.ApiResponseDto;
-import com.krainet.test.dto.projectDto.ProjectDto;
 import com.krainet.test.dto.record.RecordDto;
 
 public interface RecordService {

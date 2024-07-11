@@ -1,7 +1,6 @@
 package com.krainet.test.service;
 
 import com.krainet.test.dto.projectDto.ProjectDto;
-import com.krainet.test.dto.userDto.UserDto;
 
 import java.util.List;
 import java.util.Optional;

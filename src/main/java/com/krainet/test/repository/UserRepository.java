@@ -1,6 +1,5 @@
 package com.krainet.test.repository;
 
-import com.krainet.test.dto.userDto.UserDto;
 import com.krainet.test.entity.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 
