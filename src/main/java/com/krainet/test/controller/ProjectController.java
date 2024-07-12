@@ -27,9 +27,7 @@ public class ProjectController {
     @GetMapping("/{id}")
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<ProjectDto> findById(@PathVariable Long id) {
-        ProjectDto project = projectService.findById(id).orElseThrow(
-                () -> new UsernameNotFoundException("Project not found")
-        );
+        ProjectDto project = projectService.findById(id);
         return new ResponseEntity<>(project, HttpStatus.OK);
     }
 

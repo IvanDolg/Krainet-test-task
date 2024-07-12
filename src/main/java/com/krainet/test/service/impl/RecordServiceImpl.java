@@ -36,7 +36,7 @@ public class RecordServiceImpl implements RecordService {
 
         RecordDto recordDto = AutoRecordMapper.MAPPER.mapToRecordDto(record);
         UserDto userDto = userService.findById(record.getUserId()).get();
-        ProjectDto projectDto = projectService.findById(record.getProjectId()).get();
+        ProjectDto projectDto = projectService.findById(record.getProjectId());
 
 
         return new ApiResponseDto(recordDto, projectDto, userDto);
