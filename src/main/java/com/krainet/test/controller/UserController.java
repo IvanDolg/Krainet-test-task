@@ -9,6 +9,7 @@ import com.krainet.test.service.UserService;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.bind.annotation.*;
@@ -16,12 +17,12 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 import java.util.Set;
 
-@AllArgsConstructor
 @RestController
 @RequestMapping("/api/v1/users")
+@AllArgsConstructor
 public class UserController {
 
-    private UserService userService;
+    private final UserService userService;
     private final BCryptPasswordEncoder passwordEncoder;
     private final JWTTokenProvider jwtTokenProvider;
 
@@ -44,6 +45,7 @@ public class UserController {
     }
 
     @GetMapping("/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<UserDto> findById(@PathVariable Long id) {
         UserDto user = userService.findById(id).orElseThrow(
                 () -> new UsernameNotFoundException("User not found")
@@ -52,21 +54,23 @@ public class UserController {
     }
 
     @GetMapping("/all")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<List<UserDto>> findAll() {
         List<UserDto> users = userService.findAll();
         return new ResponseEntity<>(users, HttpStatus.OK);
     }
 
     @DeleteMapping("/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<Void> deleteById(@PathVariable Long id) {
         userService.deleteById(id);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
     @PutMapping("/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<UserDto> update(@RequestBody UserDto userDto,
                                           @PathVariable Long id) {
-
         UserDto updatedUser = userService.update(userDto, id);
         return new ResponseEntity<>(updatedUser, HttpStatus.OK);
     }

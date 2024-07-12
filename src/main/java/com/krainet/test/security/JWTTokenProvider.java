@@ -11,9 +11,11 @@ import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Component;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Component
 public class JWTTokenProvider {
+
     @Value("${jwt.token.secret}")
     private String jwtSecret;
 
@@ -28,7 +30,7 @@ public class JWTTokenProvider {
     public String generateToken(String username, String password, Set<Role> roles) {
         Claims claims = Jwts.claims().setSubject(username);
         claims.put("password", password);
-        claims.put("roles", getUserRoleNamesFromJWT(roles));
+        claims.put("roles", roles.stream().map(Role::getAuthority).collect(Collectors.toList()));
 
         Date now = new Date();
         Date validity = new Date(now.getTime() + jwtExpirationInMs);
@@ -48,12 +50,13 @@ public class JWTTokenProvider {
         userPrincipal.setPassword(getUserPasswordFromJWT(token));
         userPrincipal.setRoles(getUserRolesFromJWT(token));
 
-        return new UsernamePasswordAuthenticationToken(userPrincipal, "", userPrincipal.getAuthorities());
+        return new UsernamePasswordAuthenticationToken(userPrincipal, userPrincipal.getPassword(), userPrincipal.getAuthorities());
     }
 
     public Set<Role> getUserRolesFromJWT(String token) {
-        List<String> roles = (List<String>) Jwts.parser().setSigningKey(jwtSecret).parseClaimsJws(token).getBody().get("roles");
-        return getUserRoleNamesFromJWT(roles);
+        Claims claims = Jwts.parser().setSigningKey(jwtSecret).parseClaimsJws(token).getBody();
+        List<String> roles = claims.get("roles", List.class);
+        return roles.stream().map(Role::valueOf).collect(Collectors.toSet());
     }
 
     public String getUserUsernameFromJWT(String token) {
@@ -76,22 +79,9 @@ public class JWTTokenProvider {
     public boolean validateToken(String token) {
         try {
             Jws<Claims> claims = Jwts.parser().setSigningKey(jwtSecret).parseClaimsJws(token);
-
             return !claims.getBody().getExpiration().before(new Date());
         } catch (JwtException | IllegalArgumentException e) {
             return false;
         }
-    }
-
-    private Set<String> getUserRoleNamesFromJWT(Set<Role> roles) {
-        Set<String> result = new HashSet<>();
-        roles.forEach(role -> result.add(role.getAuthority()));
-        return result;
-    }
-
-    private Set<Role> getUserRoleNamesFromJWT(List<String> roles) {
-        Set<Role> result = new HashSet<>();
-        roles.forEach(Role::valueOf);
-        return result;
     }
 }

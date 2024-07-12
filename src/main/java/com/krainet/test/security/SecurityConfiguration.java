@@ -17,13 +17,15 @@ public class SecurityConfiguration {
     private final JWTTokenFilter jwtTokenFilter;
 
     @Bean
-    public SecurityFilterChain getSecurityFilterChain(HttpSecurity http, HandlerMappingIntrospector introspector) throws Exception {
+    public SecurityFilterChain getSecurityFilterChain(HttpSecurity http) throws Exception {
         http
                 .csrf(csrfConfigurer -> csrfConfigurer.disable())
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(requests -> requests
                         .requestMatchers("/api/v1/users/registration", "/api/v1/users/login").permitAll()
-                        .requestMatchers("user/admin/").hasRole("ADMIN")
+                        .requestMatchers("/api/v1/users/**").hasAuthority("ADMIN")
+                        .requestMatchers("/api/v1/records/**").hasAuthority("USER")
+                        .requestMatchers("/api/v1/projects/**").hasAuthority("ADMIN")
                         .anyRequest().authenticated())
                 .addFilterBefore(jwtTokenFilter, UsernamePasswordAuthenticationFilter.class);
         return http.build();
