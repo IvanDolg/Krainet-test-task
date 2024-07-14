@@ -23,7 +23,7 @@ public class GlobalExtensionHandler extends ResponseEntityExceptionHandler {
     }
 
     @ExceptionHandler(UserAlreadyExistsException.class)
-    public ResponseEntity<ErrorDetails> handleEmailAlreadyExistsException(UserAlreadyExistsException exception,
+    public ResponseEntity<ErrorDetails> handleUserAlreadyExistsException(UserAlreadyExistsException exception,
                                                                           WebRequest webRequest) {
         ErrorDetails errorDetails = new ErrorDetails(
                 LocalDateTime.now(),
@@ -34,13 +34,24 @@ public class GlobalExtensionHandler extends ResponseEntityExceptionHandler {
     }
 
     @ExceptionHandler(ProjectAlreadyExistsException.class)
-    public ResponseEntity<ErrorDetails> handleEmailAlreadyExistsException(ProjectAlreadyExistsException exception,
+    public ResponseEntity<ErrorDetails> handleProjectAlreadyExistsException(ProjectAlreadyExistsException exception,
                                                                           WebRequest webRequest) {
         ErrorDetails errorDetails = new ErrorDetails(
                 LocalDateTime.now(),
                 exception.getMessage(),
                 webRequest.getDescription(false),
                 "PROJECT_ALREADY_EXISTS");
+        return new  ResponseEntity<>(errorDetails, HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(RecordAlreadyExistsException.class)
+    public ResponseEntity<ErrorDetails> handleRecordAlreadyExistsException(RecordAlreadyExistsException exception,
+                                                                          WebRequest webRequest) {
+        ErrorDetails errorDetails = new ErrorDetails(
+                LocalDateTime.now(),
+                exception.getMessage(),
+                webRequest.getDescription(false),
+                "RECORD_ALREADY_EXISTS");
         return new  ResponseEntity<>(errorDetails, HttpStatus.BAD_REQUEST);
     }
 

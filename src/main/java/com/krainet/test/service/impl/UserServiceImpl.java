@@ -3,6 +3,7 @@ package com.krainet.test.service.impl;
 import com.krainet.test.dto.userDto.UserDto;
 import com.krainet.test.entity.Role;
 import com.krainet.test.entity.User;
+import com.krainet.test.exception.RecurseNotFoundException;
 import com.krainet.test.mapper.AutoUserMapper;
 import com.krainet.test.repository.UserRepository;
 import com.krainet.test.security.UserPrincipal;
@@ -24,6 +25,12 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserDto save(UserDto userDto) {
+        Optional<User> optionalUser = userRepository.findByUsername(userDto.getUsername());
+
+        if (optionalUser.isPresent()) {
+            throw new UsernameNotFoundException("User already exists");
+        }
+
         userDto.setPassword(passwordEncoder.encode(userDto.getPassword()));
         userDto.getRoles().add(Role.USER);
 
@@ -36,7 +43,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public UserDto update(UserDto userDto, Long id) {
         User user = userRepository.findById(id).orElseThrow(
-                () -> new UsernameNotFoundException("User not found")
+                () -> new RecurseNotFoundException("User", "id", String.valueOf(id))
         );
 
         user.setUsername(userDto.getUsername());
@@ -54,13 +61,20 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public Optional<UserDto> findById(Long id) {
-        return userRepository.findById(id).map(AutoUserMapper.MAPPER::mapToUserDto);
+    public UserDto findById(Long id) {
+        User user = userRepository.findById(id).orElseThrow(
+                () -> new RecurseNotFoundException("User", "id", String.valueOf(id))
+        );
+        return AutoUserMapper.MAPPER.mapToUserDto(user);
     }
 
     @Override
     public void deleteById(Long id) {
-        userRepository.deleteById(id);
+        User user = userRepository.findById(id).orElseThrow(
+                () -> new RecurseNotFoundException("User", "id", String.valueOf(id))
+        );
+
+        userRepository.delete(user);
     }
 
     @Override

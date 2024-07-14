@@ -47,9 +47,7 @@ public class UserController {
     @GetMapping("/{id}")
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<UserDto> findById(@PathVariable Long id) {
-        UserDto user = userService.findById(id).orElseThrow(
-                () -> new UsernameNotFoundException("User not found")
-        );
+        UserDto user = userService.findById(id);
         return new ResponseEntity<>(user, HttpStatus.OK);
     }
 
