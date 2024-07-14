@@ -28,6 +28,8 @@ public class RecordServiceImpl implements RecordService {
     @Override
     public RecordDto save(RecordDto recordDto) {
 
+        // FIXME: To avoid checking the existence of a user by id,
+        //  because you need to enter the id when saving the user
         Optional<Record> optionalRecord = recordRepository.findById(recordDto.getId());
 
         if (optionalRecord.isPresent()) {
